@@ -21,31 +21,32 @@ datestop <- as.POSIXct(strptime('2016-08-15 09:55:00', format = "%Y-%m-%d %H:%M:
 ## convert time in data file to POSIX datetime
 
 timelist <- paste(data$V2,data$V3,data$V4,data$V5)
-timelist <- as.POSIXct(strptime(time, format='%d %b %g %H:%M:%S'))
+timelist <- as.POSIXct(strptime(timelist, format='%d %b %g %H:%M:%S'))
 
 ## grab light data columns and rename
 
 lightlist <- data$V17
 
-## create list based on light status 000001 if on and 000000 if off
+## function to create list based on light status 000001 if on and 000000 if off
 
 make_light_vec <- function(x) {
-  if(light[x] > 0) {
+  if(lightlist[x] > 0) {
     light <- '000001'
   } else {
     light <- '000000'
   }
 }
 
-## light_test <- sapply(1:length(timelist), make_light_vec)
-
-format(time[1], '%Y%m%d')
+## function to create list of datetime in desired format - '%Y%m%d %H%M'
 
 make_datetime_vec <- function(x) {
-  time <- format(time[x], '%Y%m%d %H%M')
+  time <- format(timelist[x], '%Y%m%d %H%M')
 }
 
-## time_test <- sapply(1:length(timelist), make_datetime_vec)
+
+#daylight <- cat(paste(sapply(1:length(timelist), make_datetime_vec), '  ', sapply(1:length(timelist), make_light_vec), '\n', sep = ''))
 
 daylight <- paste(sapply(1:length(timelist), make_datetime_vec), '  ', sapply(1:length(timelist), make_light_vec), sep = '')
-lapply(daytime, write, 'test', append = TRUE)
+
+
+lapply(daylight, write, 'test', append = TRUE)

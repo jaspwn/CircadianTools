@@ -1,7 +1,10 @@
+library(dplyr)
+
 ## set working directory by choosing any file in directory
 
 filename <- file.choose()
-wd <- setwd(dirname(filename))
+wd <- dirname(filename)
+setwd(wd)
 
 ## read in raw MB5 data
 
@@ -9,11 +12,25 @@ raw_data <- read.table(filename, sep = '\t')
 
 ## rename columns
 
-data <- plyr::rename(raw_data, c('V1' = 'index', 'V2' = 'date', 'V3' = 'time', 'V4' = 'status', 'V5' = 'extras', 'V6' = 'mon_number', 'V7' = 'tube_number', 'V8' = 'data_type', 'V9' = 'blank', 'V10' = 'light_sensor', 'V11' = 'position', 'V12' = 'total'))
+raw_data <- plyr::rename(raw_data, c('V1' = 'index', 'V2' = 'date', 'V3' = 'time', 'V4' = 'status', 'V5' = 'extras', 'V6' = 'mon_number', 'V7' = 'tube_number', 'V8' = 'data_type', 'V9' = 'blank', 'V10' = 'light_sensor', 'V11' = 'position', 'V12' = 'total'))
 
 ## create a single date/time column in POSIXct format
 
-data$datetime <- as.POSIXct(paste(data$date, data$time), format = '%d %b %g %H:%M:%S')
+raw_data$datetime <- as.POSIXct(paste(raw_data$date, raw_data$time), format = '%d %b %g %H:%M:%S')
+
+## arrange data and select columns
+
+data <- raw_data %>%
+  select(datetime, mon_number, tube_number, data_type, total) %>%
+  filter(data_type == 'Ct' & tube_number != '0') %>%
+  arrange(mon_number, tube_number, datetime)
+
+
+
+
+
+
+
 
 ## create list of files in working directory
 
